@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 //import { ColorGUIHelper } from "./utils.js"
 
 import earth_texture from "../assets/textures/earth_2k.jpg"
+import space_texture from "../assets/textures/space_8k.jpg"
 
 class App extends React.Component {
     constructor(props){
@@ -12,15 +13,21 @@ class App extends React.Component {
 
         this.unscaled_astro_consts = {
             AU: 1.496*(10**8), //km
-            earth_radius: 6378 //km
+            earth_radius: 6378, //km
+            skysphere_radius: 1.5*(10**6) //km
+        }
+
+        this.shape_consts = {
+            earth_lunes: 40, 
+            earth_segments: 40,
+            skysphere_lunes: 300,
+            skysphere_segments: 300,
         }
 
         this.consts = {
             debug: false,
             starting_camera: 1.8, //multiplier
             scale_factor: 10**-3, //multiplier
-            earth_lunes: 40, 
-            earth_segments: 40
         }
 
         this.astro_consts = {}
@@ -39,8 +46,8 @@ class App extends React.Component {
         const scene = new THREE.Scene();
         
         //setup camera
-        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 2000 );
-        camera.position.x = this.astro_consts.earth_radius*this.consts.starting_camera;
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 5000 );
+        camera.position.set(0,this.astro_consts.earth_radius*this.consts.starting_camera,0);
 
         //setup renderer
         const renderer = new THREE.WebGLRenderer();
@@ -65,16 +72,16 @@ class App extends React.Component {
      */
     addLights(scene) {
         //create sun lighting
-        const sun_light = new THREE.PointLight(0xffffff, 100, 0, 2);
+        const sun_light = new THREE.PointLight(0xffffff, 1.25, 0, 2);
         sun_light.position.set(this.astro_consts.AU, 0, 0);
         sun_light.castShadow = true;
 
         //create ambient lighting
-        const ambient_light = new THREE.AmbientLight(0xffffff, 1);
+        const ambient_light = new THREE.AmbientLight(0xffffff, 0.1);
 
         //add items to scene
-        scene.add( sun_light);
-        scene.add( ambient_light);
+        scene.add(sun_light);
+        scene.add(ambient_light);
 
         return [sun_light, ambient_light]
     }
@@ -86,8 +93,12 @@ class App extends React.Component {
      */
     addEarth(scene){
         //create sphere
-        var geometry = new THREE.SphereGeometry( this.astro_consts.earth_radius, this.consts.earth_lunes, this.consts.earth_segments );
-        var material = new THREE.MeshBasicMaterial({map: this.loadTexture(earth_texture)});
+        var geometry = new THREE.SphereGeometry( this.astro_consts.earth_radius, this.shape_consts.earth_lunes, this.shape_consts.earth_segments );
+        var material = new THREE.MeshStandardMaterial({
+            map: this.loadTexture(earth_texture),
+            metalness: 0.3,
+            roughness: 0.8     
+        });
         var sphere = new THREE.Mesh( geometry, material );
         
         //create wireframe
@@ -111,6 +122,26 @@ class App extends React.Component {
     }
 
     /**
+     * Creates SkySphere for a scene
+     * @param scene the scene to add to
+     * @returns the sphere mesh
+     */
+    addSkySphere(scene){
+        //create sphere
+        var geometry = new THREE.SphereGeometry( this.astro_consts.skysphere_radius, this.shape_consts.skysphere_lunes, this.shape_consts.skysphere_segments );
+        var material = new THREE.MeshStandardMaterial({
+            map: this.loadTexture(space_texture),
+            side: THREE.BackSide
+        });
+        var sphere = new THREE.Mesh( geometry, material );
+
+        //add item to scene
+        scene.add(sphere);
+
+        return sphere
+    }
+
+    /**
      * Loads a texture given an imported image object
      * @param {Image} image_object the image object
      * @return a texture object
@@ -124,7 +155,8 @@ class App extends React.Component {
 
     componentDidMount() {
         const [scene, camera, renderer, ] = this.setupScene()
-        const [,] = this.addLights(scene)
+        this.addLights(scene)
+        this.addSkySphere(scene)
         var [earth_sphere, earth_lines] = this.addEarth(scene)
         
         /*
