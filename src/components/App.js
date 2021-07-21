@@ -63,6 +63,15 @@ class App extends React.Component {
             this.consts.debug, THREE.FrontSide
         );
 
+        var proxy = ""
+        var api = "https://api.n2yo.com/rest/v1/satellite/tle/25544&apiKey="
+        var apikey = ""
+        fetch(proxy+api+apikey)
+        .then(r => r.json())
+        .then(
+            r => console.log(r)
+        )
+
         scene.add(sun_light);
         scene.add(sun);
         scene.add(sun.target);
