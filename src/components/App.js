@@ -2,8 +2,13 @@ import React from "react";
 import * as THREE from "three";
 //import { GUI } from 'three/examples/jsm/libs/dat.gui.module'
 
-import { setupScene, addLight, CelestialBody } from '../js/graphics.js'
+import { setupScene, addLight, CelestialBody } from "../js/graphics.js"
+import { DataSet } from "../js/data.js"
 //import { ColorGUIHelper } from "../js/utils.js"
+import backend from "../config/backend.json"
+import sources from "../config/sources.json"
+
+import test_dataset from "../assets/datasets/test.txt"
 
 import earth_texture from "../assets/textures/earth_2k.jpg"
 import space_texture from "../assets/textures/space_8k.jpg"
@@ -30,6 +35,7 @@ class App extends React.Component {
 
         this.consts = {
             debug: false,
+            use_source: false,
             starting_camera: 1.8, //multiplier
             scale_factor: 10**-3 //multiplier
         }
@@ -63,14 +69,21 @@ class App extends React.Component {
             this.consts.debug, THREE.FrontSide
         );
 
-        var proxy = ""
-        var api = "https://api.n2yo.com/rest/v1/satellite/tle/25544&apiKey="
-        var apikey = ""
-        fetch(proxy+api+apikey)
-        .then(r => r.json())
-        .then(
-            r => console.log(r)
-        )
+        var source_to_fetch;
+        var imported_dataset;
+        var test;
+
+        if (this.consts.use_source){
+            source_to_fetch = backend["cors-proxy"]+sources["tle-sat"];
+        }
+        else{
+            source_to_fetch = test_dataset;   
+        }
+
+        fetch(source_to_fetch)
+        .then(r => r.text())
+        .then(text => imported_dataset = text)
+        .then(imported_dataset => test = new DataSet("tle", imported_dataset))
 
         scene.add(sun_light);
         scene.add(sun);
