@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import * as satellite from "satellite.js";
+import { Vector3 } from "three";
 
 class DataSet{
     constructor(type, raw){
@@ -19,29 +21,25 @@ class DataSet{
 
     processTLE(){
         var split_data = this.raw_data.split(/\r?\n/);
+        const date = new Date();
+        const gmst = satellite.gstime(date);
 
         for (var i = 0; i < (split_data.length-1)/3; i++){
             var entry = 3*i;
-            var line_0 = split_data[entry];
-            var line_1 = split_data[entry+1].split(/\s+/g);
-            var line_2 = split_data[entry+2].split(/\s+/g);
 
-            var name = line_0;
-            var orbital_elements = {
-                "epoch year": line_1[6],
-                "epoch day": line_1[7],
-                "inclination": line_2[2],
-                "right ascension": line_2[3],
-                "eccentricity": line_2[4],
-                "argument of perigee": line_2[5],
-                "mean anomaly": line_2[6],
-                "mean motion": line_2[7]
-            };
-
-            console.log(orbital_elements)
-
-            this.datapoints.push(new DataPoint(name, orbital_elements, "orbital"));
+            var record = satellite.twoline2satrec(split_data[entry+1], split_data[entry+2])
+            var posvel = satellite.propagate(record, date);
+            var pos = satellite.eciToGeodetic(posvel.position, gmst);
+            
+            this.datapoints.push(new DataPoint(split_data[entry], pos, "polar"));
         }
+    }
+
+    renderDataPoints(scene){
+        for (var datapoint of this.datapoints){
+            scene.add(datapoint.sphere)
+        }
+        console.log(this.datapoints)
     }
 }
 
@@ -55,7 +53,12 @@ class DataPoint{
             case "cartesian":
                 break;
             case "orbital":
-                this.orbitaltoCartesian();
+                break;
+            case "polar":
+                var r = position.height*10**-3;
+                var lat = position.latitude;
+                var long = position.longitude;
+                this.position = new Vector3(r*Math.cos(lat)*Math.cos(long), r*Math.sin(lat), r*Math.cos(lat)*Math.sin(long))
                 break;
             default:
                 break;
@@ -64,11 +67,8 @@ class DataPoint{
         this.createPoint();
     }
 
-    orbitaltoCartesian(){
-    }
-
     createPoint(){
-        this.sphere_geometry = new THREE.SphereGeometry(0.01, 5, 5);
+        this.sphere_geometry = new THREE.SphereGeometry(0.1, 5, 5);
         this.sphere_material = new THREE.MeshBasicMaterial();
         this.sphere = new THREE.Mesh(this.sphere_geometry, this.sphere_material);
         this.sphere.position.copy(this.position);

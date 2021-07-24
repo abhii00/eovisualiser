@@ -11,7 +11,7 @@ import sources from "../config/sources.json"
 import test_dataset from "../assets/datasets/test.txt"
 
 import earth_texture from "../assets/textures/earth_2k.jpg"
-import space_texture from "../assets/textures/space_8k.jpg"
+import space_texture from "../assets/textures/black.jpg"
 
 class App extends React.Component {
     constructor(props){
@@ -27,6 +27,7 @@ class App extends React.Component {
         this.shape_consts = {
             earth_lunes: 40, 
             earth_segments: 40,
+            earth_rotvel: 7.2921159*(10**-5),
             sun_lunes: 20,
             sun_segments: 20,
             space_lunes: 300,
@@ -36,7 +37,7 @@ class App extends React.Component {
         this.consts = {
             debug: false,
             use_source: false,
-            starting_camera: 1.8, //multiplier
+            starting_camera: 5, //multiplier
             scale_factor: 10**-3 //multiplier
         }
 
@@ -84,6 +85,7 @@ class App extends React.Component {
         .then(r => r.text())
         .then(text => imported_dataset = text)
         .then(imported_dataset => test = new DataSet("tle", imported_dataset))
+        .then(test => test.renderDataPoints(scene))
 
         scene.add(sun_light);
         scene.add(sun);
@@ -104,12 +106,12 @@ class App extends React.Component {
         function animate(){
             requestAnimationFrame(animate);
 
-            Earth.sphere.rotation.y += 0.001;
-            Earth.wireframe.rotation.y += 0.001;
+            Earth.sphere.rotation.y += 0.0001;
+            Earth.wireframe.rotation.y += 0.0001;
 
             renderer.render(scene, camera);
         };
-        animate();       
+        animate();     
     }
 
     render() {
