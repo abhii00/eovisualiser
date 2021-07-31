@@ -11,7 +11,6 @@ import sources from "../config/sources.json"
 import test_dataset from "../assets/datasets/test.txt"
 
 import earth_texture from "../assets/textures/earth_2k.jpg"
-import space_texture from "../assets/textures/black.jpg"
 
 class App extends React.Component {
     constructor(props){
@@ -56,17 +55,20 @@ class App extends React.Component {
 
         var Space = new CelestialBody( 
             new THREE.Vector3(0,0,0),
-            this.astro_consts.space_radius, this.shape_consts.space_lunes, this.shape_consts.space_segments, space_texture, 
+            this.astro_consts.space_radius, this.shape_consts.space_lunes, this.shape_consts.space_segments, 
+            null, new THREE.Color(0x000000),
             this.consts.debug, THREE.BackSide
         );
         var Sun = new CelestialBody(
             new THREE.Vector3(this.astro_consts.AU,0,0),
             this.astro_consts.sun_radius, this.shape_consts.sun_lunes, this.shape_consts.sun_segments, 
-            null, true, THREE.FrontSide
+            null, new THREE.Color(0xffffff), 
+            true, THREE.FrontSide
         );
         var Earth = new CelestialBody(
             new THREE.Vector3(0,0,0),
-            this.astro_consts.earth_radius, this.shape_consts.earth_lunes, this.shape_consts.earth_segments, earth_texture, 
+            this.astro_consts.earth_radius, this.shape_consts.earth_lunes, this.shape_consts.earth_segments, 
+            earth_texture, null, 
             this.consts.debug, THREE.FrontSide
         );
 
@@ -84,7 +86,7 @@ class App extends React.Component {
         fetch(source_to_fetch)
         .then(r => r.text())
         .then(text => imported_dataset = text)
-        .then(imported_dataset => test = new DataSet("tle", imported_dataset))
+        .then(imported_dataset => test = new DataSet("satellite-tle", imported_dataset))
         .then(test => test.renderDataPoints(scene))
 
         scene.add(sun_light);

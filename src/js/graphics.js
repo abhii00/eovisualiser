@@ -60,13 +60,25 @@ function addLight(light_type, light_color, light_intensity, light_position, ligh
     return light
 }
 
+/**
+ * A celestial body
+ * @param position the position of the body
+ * @param radius the radius of the body
+ * @param lunes the number of vertical divisions for the sphere
+ * @param segments the number of horizontal divisions for the sphere
+ * @param texture the texture to map to the sphere, leave as null for a untextured sphere
+ * @param color the color of the sphere, leave as null for textured sphere
+ * @param show_wireframe the toggle to show the spherical wireframe
+ * @param side the side of the celestial body to show
+ */
 class CelestialBody {
-    constructor(position, radius, lunes, segments, texture, show_wireframe, side){
+    constructor(position, radius, lunes, segments, texture, color, show_wireframe, side){
         this.position = position;
         this.radius = radius;
         this.lunes = lunes;
         this.segments = segments;
         this.texture = texture;
+        this.color = color;
         this.show_wireframe = show_wireframe;
         this.side = side;
 
@@ -77,22 +89,31 @@ class CelestialBody {
         this.createWireframe();
     }
 
+    /**
+     * Creates the solid sphere for the celestial body
+     */
     createSphere(){
-        this.sphere_geometry = new THREE.SphereGeometry(this.radius, this.lunes, this.segments);
+        this.sphere_geometry = new THREE.SphereBufferGeometry(this.radius, this.lunes, this.segments);
 
         this.sphere_material = new THREE.MeshStandardMaterial({
             metalness: this.metalness,
             roughness: this.roughness,
-            side: this.side
+            side: this.side,
         })
         if (this.texture !== null){
             this.sphere_material.map = loadTexture(this.texture)
+        }
+        else{
+            this.sphere_material.color = this.color
         }
         
         this.sphere = new THREE.Mesh(this.sphere_geometry, this.sphere_material);
         this.sphere.position.copy(this.position)
     }
 
+    /**
+     * Creates the wireframe for the celestial body
+     */
     createWireframe(){
         this.wireframe_geometery = new THREE.WireframeGeometry(this.sphere_geometry);
 
