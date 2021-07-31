@@ -26,7 +26,6 @@ class App extends React.Component {
         this.shape_consts = {
             earth_lunes: 40, 
             earth_segments: 40,
-            earth_rotvel: 7.2921159*(10**-5),
             sun_lunes: 20,
             sun_segments: 20,
             space_lunes: 300,
@@ -86,7 +85,7 @@ class App extends React.Component {
         fetch(source_to_fetch)
         .then(r => r.text())
         .then(text => imported_dataset = text)
-        .then(imported_dataset => test = new DataSet("satellite-tle", imported_dataset))
+        .then(imported_dataset => test = new DataSet("satellite-tle", imported_dataset, this.consts.scale_factor))
         .then(test => test.renderDataPoints(scene))
 
         scene.add(sun_light);
@@ -99,11 +98,6 @@ class App extends React.Component {
         scene.add(Sun.wireframe);
         scene.add(Earth.sphere);
         scene.add(Earth.wireframe);
-
-        /*
-        const gui1 = new GUI();
-        gui1.addColor(new ColorGUIHelper(sun, 'color'), 'value').name('color');
-        */
 
         function animate(){
             requestAnimationFrame(animate);
