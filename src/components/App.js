@@ -2,9 +2,9 @@ import React from "react";
 import * as THREE from "three";
 //import { GUI } from 'three/examples/jsm/libs/dat.gui.module'
 
-import { setupScene, addLight, CelestialBody } from "../js/graphics.js"
-import { DataSet } from "../js/data.js"
-//import { ColorGUIHelper } from "../js/utils.js"
+import { setupScene, addLight, CelestialBody } from "./visualiser/graphics.js"
+import { DataSet } from "./visualiser/data.js"
+//import { ColorGUIHelper } from "../visualiser/utils.js"
 import backend from "../config/backend.json"
 import sources from "../config/sources.json"
 
