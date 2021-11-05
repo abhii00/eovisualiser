@@ -75,17 +75,17 @@ class App extends React.Component {
         var imported_dataset;
         var test;
 
-        if (this.consts.use_source){
-            source_to_fetch = backend["cors-proxy"]+sources["tle-sat"];
-        }
-        else{
-            source_to_fetch = test_dataset;   
-        }
-
+        /*
+        source_to_fetch = this.consts.use_source ? backend["cors-proxy"]+sources["tle-sat"] : test_dataset
         fetch(source_to_fetch)
         .then(r => r.text())
         .then(text => imported_dataset = text)
         .then(imported_dataset => test = new DataSet("satellite-tle", imported_dataset, this.consts.scale_factor))
+        .then(test => test.renderDataPoints(scene))
+        */
+        fetch(test_dataset)
+        .then(r => r.text())
+        .then(text => test = new DataSet("satellite-tle", text, this.consts.scale_factor))
         .then(test => test.renderDataPoints(scene))
 
         scene.add(sun_light);

@@ -42,19 +42,22 @@ class DataSet{
 
             var record = satellite.twoline2satrec(split_data[entry+1], split_data[entry+2])
             var posvel = satellite.propagate(record, date);
-            var pos = new THREE.Vector3(this.scale_factor*posvel.position.x, this.scale_factor*posvel.position.z, this.scale_factor*posvel.position.y)
-            
-            if (Math.abs(pos.x) < 0.05){
-                this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0xff0000)));
-            }
-            else if (Math.abs(pos.y) < 0.05){
-                this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0x0000ff)));
-            }
-            else if (Math.abs(pos.z) < 0.05){
-                this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0x00ff00)));
-            }
-            else{
-                this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.sphere, new THREE.Color(0xffffff)));
+            if (posvel.position !== undefined){
+                console.log(posvel);
+                var pos = new THREE.Vector3(this.scale_factor*posvel.position.x, this.scale_factor*posvel.position.z, this.scale_factor*posvel.position.y)
+                
+                if (Math.abs(pos.x) < 0.05){
+                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0xff0000)));
+                }
+                else if (Math.abs(pos.y) < 0.05){
+                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0x0000ff)));
+                }
+                else if (Math.abs(pos.z) < 0.05){
+                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0x00ff00)));
+                }
+                else{
+                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.sphere, new THREE.Color(0xffffff)));
+                }
             }
         }
     }
