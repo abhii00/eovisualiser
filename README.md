@@ -1,4 +1,4 @@
-# **EOVisualiser**
+# **EO Visualiser**
 
 An accessible visualiser for Earth Observation (EO) data and space object tracking.
 
