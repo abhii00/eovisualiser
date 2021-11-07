@@ -9,16 +9,16 @@ import * as satellite from 'satellite.js';
  */
 class DataSet{
     constructor(type, raw, scale_factor){
-        this.type = type
         this.raw_data = raw
         this.scale_factor = scale_factor
         this.datapoints = []
 
         this.geometry = {
-            sphere: new THREE.SphereBufferGeometry(0.03, 2, 2),
-            big_sphere: new THREE.SphereBufferGeometry(0.1, 3, 3)
+            sphere: new THREE.SphereBufferGeometry(0.015, 4, 4),
+            big_sphere: new THREE.SphereBufferGeometry(0.03, 4, 4)
         }
 
+        this.type = type
         switch(this.type){
             case 'blank':
                 break;
@@ -70,7 +70,6 @@ class DataSet{
         for (var datapoint of this.datapoints){
             scene.add(datapoint.sphere)
         }
-        console.log(this.datapoints)
     }
 }
 

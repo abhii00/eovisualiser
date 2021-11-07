@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
 import earth_texture from './assets/textures/earth_2k.jpg';
 
 /**
