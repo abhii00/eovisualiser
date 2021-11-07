@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/eovisualiser/static/css/main.58b01ad2.chunk.css",
+    "main.js": "/eovisualiser/static/js/main.e1dff682.chunk.js",
+    "main.js.map": "/eovisualiser/static/js/main.e1dff682.chunk.js.map",
+    "runtime-main.js": "/eovisualiser/static/js/runtime-main.c17d5ad0.js",
+    "runtime-main.js.map": "/eovisualiser/static/js/runtime-main.c17d5ad0.js.map",
+    "static/js/2.479eaaf8.chunk.js": "/eovisualiser/static/js/2.479eaaf8.chunk.js",
+    "static/js/2.479eaaf8.chunk.js.map": "/eovisualiser/static/js/2.479eaaf8.chunk.js.map",
+    "index.html": "/eovisualiser/index.html",
+    "static/css/main.58b01ad2.chunk.css.map": "/eovisualiser/static/css/main.58b01ad2.chunk.css.map",
+    "static/js/2.479eaaf8.chunk.js.LICENSE.txt": "/eovisualiser/static/js/2.479eaaf8.chunk.js.LICENSE.txt",
+    "static/media/earth_2k.981cc3e3.jpg": "/eovisualiser/static/media/earth_2k.981cc3e3.jpg",
+    "static/media/test.73eab6d5.txt": "/eovisualiser/static/media/test.73eab6d5.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c17d5ad0.js",
+    "static/js/2.479eaaf8.chunk.js",
+    "static/css/main.58b01ad2.chunk.css",
+    "static/js/main.e1dff682.chunk.js"
+  ]
+}
