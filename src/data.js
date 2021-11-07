@@ -1,5 +1,5 @@
-import * as THREE from "three";
-import * as satellite from "satellite.js";
+import * as THREE from 'three';
+import * as satellite from 'satellite.js';
 
 /**
  * A Dataset
@@ -20,9 +20,9 @@ class DataSet{
         }
 
         switch(this.type){
-            case "blank":
+            case 'blank':
                 break;
-            case "satellite-tle":
+            case 'satellite-tle':
                 this.processTLE();
                 break;
             default:
