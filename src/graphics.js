@@ -6,7 +6,7 @@ import earth_texture from './assets/textures/earth_2k.jpg';
 /**
  * Sets up scene with camera, controls and renderer 
  * @param starting_camera_pos the starting y position of the camera
- * @return an array containing the scene, camera, renderer, and controls in that order
+ * @return an array containing the scene, camera, renderer in that order
  */
 function setupScene(starting_camera_pos){
     //setup new scene
@@ -27,7 +27,7 @@ function setupScene(starting_camera_pos){
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
 
-    return [scene, camera, renderer, controls]
+    return [scene, camera, renderer]
 }
 
 /**

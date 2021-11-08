@@ -7,16 +7,20 @@ import { DataSet } from './data.js';
 import test_dataset from './assets/datasets/test.txt';
 
 class App extends React.Component {
+    /* 
+    TODO Add API request to portfolioserver
+    TODO Add accurate earth position
+    */
+
     componentDidMount() {
-        const [scene, camera, renderer,] = setupScene(new THREE.Vector3(0,0,3));
+        const [scene, camera, renderer] = setupScene(new THREE.Vector3(0,0,3));
         this.mount.appendChild(renderer.domElement);
         createEnvironment(scene, camera, renderer);
 
         var test;
         fetch(test_dataset)
         .then(r => r.text())
-        .then(text => test = new DataSet("satellite-tle", text, 1/6378))
-        .then(test => test.renderDataPoints(scene))
+        .then(text => test = new DataSet("satellite-tle", text, 1/6378, scene, camera, renderer))
     }
 
     render() {

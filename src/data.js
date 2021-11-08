@@ -3,37 +3,41 @@ import * as satellite from 'satellite.js';
 
 /**
  * A Dataset
- * @param type the type of dataset, currently supports: satellite-tle
+ * @param type the type of data provided, currently supports: satellite-tle
  * @param raw the raw dataset
  * @param scale_factor the scaling factor for display
  */
-class DataSet{
-    constructor(type, raw, scale_factor){
-        this.raw_data = raw
-        this.scale_factor = scale_factor
-        this.datapoints = []
+class DataSet {
+    constructor(type, raw, scale_factor, scene, camera, renderer){
+        this.raw_data = raw;
+        this.scale_factor = scale_factor;
+        this.datapoints = [];
 
-        this.geometry = {
-            sphere: new THREE.SphereBufferGeometry(0.015, 4, 4),
-            big_sphere: new THREE.SphereBufferGeometry(0.03, 4, 4)
-        }
+        //three js environment
+        this.scene = scene;
+        this.camera = camera;
+        this.renderer = renderer;
 
-        this.type = type
+        //reusable geometry and material
+        this.sphere_geometry = new THREE.SphereBufferGeometry(0.01, 2, 2);
+        this.sphere_material = new THREE.MeshBasicMaterial();
+
+        //workflow
+        this.type = type;
         switch(this.type){
-            case 'blank':
-                break;
             case 'satellite-tle':
-                this.processTLE();
-                break;
+                this.processTLEData();
+                this.renderECIDataPoints();
+            break;
             default:
-                break;
+            break;
         }
     }
 
     /**
-     * Processes large TLE data and creates ECI datapoints 
+     * Processes TLE data and creates ECI datapoints 
      */
-    processTLE(){
+    processTLEData(){
         var split_data = this.raw_data.split(/\r?\n/);
         const date = new Date();
 
@@ -43,32 +47,23 @@ class DataSet{
             var record = satellite.twoline2satrec(split_data[entry+1], split_data[entry+2])
             var posvel = satellite.propagate(record, date);
             if (posvel.position !== undefined){
-                console.log(posvel);
-                var pos = new THREE.Vector3(this.scale_factor*posvel.position.x, this.scale_factor*posvel.position.z, this.scale_factor*posvel.position.y)
-                
-                if (Math.abs(pos.x) < 0.05){
-                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0xff0000)));
-                }
-                else if (Math.abs(pos.y) < 0.05){
-                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0x0000ff)));
-                }
-                else if (Math.abs(pos.z) < 0.05){
-                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.big_sphere, new THREE.Color(0x00ff00)));
-                }
-                else{
-                    this.datapoints.push(new ECIDataPoint(split_data[entry], pos, this.geometry.sphere, new THREE.Color(0xffffff)));
-                }
+                var pos = new THREE.Vector3(posvel.position.x, posvel.position.y, posvel.position.z);
+
+                const mesh = new THREE.Mesh(this.sphere_geometry, this.sphere_material);
+                mesh.position.copy(pos.multiplyScalar(this.scale_factor));
+
+                var datapoint = new ECIDataPoint(split_data[entry], mesh);
+                this.datapoints.push(datapoint);
             }
         }
     }
 
     /**
-     * Renders the data points for the dataset into a scene
-     * @param scene the scene in which to render the datapoints
+     * Renders a set of ECI data points for the dataset into the datasets scene
      */
-    renderDataPoints(scene){
+    renderECIDataPoints(){
         for (var datapoint of this.datapoints){
-            scene.add(datapoint.sphere)
+            this.scene.add(datapoint.mesh)
         }
     }
 }
@@ -76,27 +71,12 @@ class DataSet{
 /**
  * An individual ECI datapoint
  * @param id a unique id for the point
- * @param position the position of the point in ECI coordinates
- * @param geometry the geometry object for the point
- * @param color the color for the point
+ * @param mesh the object for the point
  */
 class ECIDataPoint{
-    constructor(id, position, geometry, color){
+    constructor(id, mesh){
         this.id = id;
-        this.position = position;
-        this.geometry = geometry;
-        this.color = color;
-
-        this.createPoint();
-    }
-
-    /**
-     * Creates the spherical mesh for a point
-     */
-    createPoint(){
-        this.sphere_material = new THREE.MeshBasicMaterial({color: this.color});
-        this.sphere = new THREE.Mesh(this.geometry, this.sphere_material);
-        this.sphere.position.copy(this.position);
+        this.mesh = mesh;
     }
 }
 
