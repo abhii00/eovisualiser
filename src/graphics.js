@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+import { calculateEarthRotation } from './data';
+
 import earth_texture from './assets/textures/earth_2k.jpg';
 
 /**
@@ -67,20 +69,23 @@ function createEnvironment(scene, camera, renderer){
     scene.add(sun);
 
     //earth
+    const earth_tilt = 23.5; //degrees of earth tilt
+
     const earth_material = new THREE.MeshStandardMaterial({
         map: loadTexture(earth_texture),
         metalness: 0.4,
         roughness: 0.8
     }); 
     const earth = new THREE.Mesh(sphere_geometry, earth_material);
-    scene.add(earth); 
-
+    earth.rotation.set(0,calculateEarthRotation(),earth_tilt*Math.PI/180,'ZYX'); //tilt about axis perp. to 90 longitude
+    scene.add(earth);  
+    
     //animate
     function animate(){
         requestAnimationFrame(animate);
 
         render();
-    };
+    }
 
     //render
     function render() {
