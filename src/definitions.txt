@@ -1,15 +1,21 @@
+DEFINITIONS:
 prime meridian - 0 longitude at greenwich
 longitude - angle around earth east-to-west, divides into vertical segments
 latitude - angle around earth north-to-south, divides into horizontal segments
+right ascension - angle around east-to-west from vernal equinox
 
 ecliptic plane - plane of earth's orbit around sun
 celestial equator - plane of earth's equator
-axial tilt - celestial equator tilted by 23.5 degrees relative to ecliptic plane
+obliquity/axial tilt - celestial equator tilted by 23.5 degrees relative to ecliptic plane
 equinox - where celestial equator and ecliptic plane intersect i.e. axis of rotation of ecliptic to get celestial equator
     - technically, the two points that define this axis (vernal and autumnal)
 
 julian day - day since 4713 BC
+j2000 - day since 2000 AD
+gmst - angle between greenwich prime meridian and vernal equinox
 
-ECI - earth-centred inertial coordinates - x,y,z that do not rotate with earth
-ECF - earth-centred fixed coordinates - x,y,z that rotate with earth
-geodetic - latitude, longitude
+ECI (earth-centred inertial coordinates) - x,y,z - fixed
+equatorial - declination, right ascension - fixed (equivalent to ECI with different units)
+ECF (earth-centred fixed coordinates) - x,y,z - rotating
+geodetic - latitude, longitude - rotating (equivalent to ECF with different units)
+ecliptic - declination, right ascension - fixed

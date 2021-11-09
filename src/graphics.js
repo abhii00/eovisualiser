@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { calculateEarthRotation } from './data';
+import { calculateEarthRotation, calculateSunPositionECI } from './utils';
 
 import earth_texture from './assets/textures/earth_2k.jpg';
 
@@ -41,13 +41,9 @@ function setupScene(starting_camera_pos){
 function createEnvironment(scene, camera, renderer){
     /*
     6378km (1 R_e) is mapped to 1 unit,
-    sun positioned 80 units away rather than approx 20,000
+    sun positioned 80 units away rather than approx 20,000,
+    everything is in ECI (sun, space objects) and earth is rotated to match this
     */
-
-    //lighting
-    const sun_light = new THREE.PointLight(0xffffff, 1);
-    sun_light.position.set(80,0,0);
-    scene.add(sun_light);
 
     //reusable geometry
     const sphere_geometry = new THREE.SphereBufferGeometry(1,60,60);
@@ -62,22 +58,36 @@ function createEnvironment(scene, camera, renderer){
     scene.add(space);
 
     //sun
+    const sun_offset = 80;
+    const [sun_x, sun_y, sun_z] = calculateSunPositionECI();
+
+    const sun_light = new THREE.PointLight(0xffffff, 1);
+    sun_light.position.set(sun_offset*sun_x,sun_offset*sun_z,sun_offset*sun_y);
+    scene.add(sun_light);
+
     const sun_material = new THREE.MeshBasicMaterial();
     const sun = new THREE.Mesh(sphere_geometry, sun_material);
     sun.scale.set(2,2,2);
-    sun.position.set(80,0,0);
+    sun.position.set(sun_offset*sun_x,sun_offset*sun_z,sun_offset*sun_y);
     scene.add(sun);
 
-    //earth
-    const earth_tilt = 23.5; //degrees of earth tilt
+    //line connecting earth and sun
+    var points = [];
+    points.push(new THREE.Vector3(0,0,0));
+    points.push(sun.position);
+    const line_geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line_material = new THREE.LineBasicMaterial();
+    const line = new THREE.Line(line_geometry,line_material);
+    scene.add(line);
 
+    //earth
     const earth_material = new THREE.MeshStandardMaterial({
         map: loadTexture(earth_texture),
         metalness: 0.4,
         roughness: 0.8
     }); 
     const earth = new THREE.Mesh(sphere_geometry, earth_material);
-    earth.rotation.set(0,calculateEarthRotation(),earth_tilt*Math.PI/180,'ZYX'); //tilt about axis perp. to 90 longitude
+    earth.rotation.set(0,calculateEarthRotation(),0);
     scene.add(earth);  
     
     //animate
