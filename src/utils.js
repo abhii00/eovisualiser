@@ -72,7 +72,10 @@ function calculateSunPositionECI(j2000 = convertDate('j2000')){
  * @returns the rotation of the earth about its axis in radians
  */
 function calculateEarthRotation(gmst = convertDate('gmst')){
-    return -gmst-Math.PI/2;
+    var toggle;
+    if (gmst > Math.PI){ toggle = 1 }
+    else { toggle = -1 }
+    return -gmst+toggle*Math.PI/2;
 }
 
 export {

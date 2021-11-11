@@ -6,30 +6,42 @@ import { calculateEarthRotation, calculateSunPositionECI } from './utils';
 import earth_texture from './assets/textures/earth_2k.jpg';
 
 /**
- * Sets up scene with camera, controls and renderer 
+ * Creates scene with camera, controls and renderer 
  * @param starting_camera_pos the starting y position of the camera
  * @return an array containing the scene, camera, renderer in that order
  */
-function setupScene(starting_camera_pos){
-    //setup new scene
+function createScene(starting_camera_pos){
+    //create new scene
     const scene = new THREE.Scene();
     
-    //setup camera
+    //create camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1);
     camera.position.copy(starting_camera_pos)
 
-    //setup renderer
+    //create renderer
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    //setup camera controls
+    //create camera controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
 
     return [scene, camera, renderer]
+}
+
+/**
+ * Updates the position of the mouse on an event
+ * @param e the event on which to update the mouse position
+ * @returns a THREE Vector2 object containing the x and y position of the mouse
+ */
+function updateMousePosition(e){
+    const mouse = new THREE.Vector2();
+    mouse.x = (e.clientX / window.innerWidth)*2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight)*2 + 1;
+    return mouse;
 }
 
 /**
@@ -118,7 +130,8 @@ function loadTexture(image_object){
 }
 
 export {
-    setupScene,
+    createScene,
     createEnvironment,
+    updateMousePosition,
     loadTexture
 }
