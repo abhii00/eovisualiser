@@ -8,7 +8,6 @@ import test_dataset from './assets/datasets/test.txt';
 
 class App extends React.Component {
     /* 
-    FIXME Day-night cycle of Earth
     TODO Add API request to portfolioserver
     TODO Add clickable elements
     TODO Add orbit visualisation

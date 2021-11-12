@@ -144,7 +144,7 @@ class DataSet {
 }
 
 /**
- * An individual ECF datapoint
+ * An individual ECI datapoint
  * @param mesh the object for the point
  */
 class ECIDataPoint{
