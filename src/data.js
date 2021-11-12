@@ -91,8 +91,14 @@ class DataSet {
                 for (var j = 0; j <= resolution; j++){
                     var ecc_anom = j * 2 * Math.PI/resolution;
                     var point = new THREE.Vector3(a*Math.cos(ecc_anom), 0.0, b*Math.sin(ecc_anom));
-                    var rotation = new THREE.Euler(record.nodeo,record.argpo,record.inclo);
-                    point.applyEuler(rotation);
+                    /*
+                    var nodeo_rot = new THREE.Euler(0,record.nodeo-Math.PI/2,0);
+                    var inclo_rot = new THREE.Euler(record.inclo, 0, 0);
+                    var argpo_rot = new THREE.Euler(0,record.argpo,0);                    
+                    point.applyEuler(nodeo_rot);
+                    point.applyEuler(inclo_rot);
+                    point.applyEuler(argpo_rot);
+                    */
                     points.push(point);
                 }
                 const orbit_geometry = new THREE.BufferGeometry().setFromPoints(points);
