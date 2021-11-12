@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import * as satellite from 'satellite.js';
 
 /**
@@ -54,16 +55,16 @@ function calculateSunPositionCE(j2000 = convertDate('j2000')){
 /**
  * Calculates the x,y,z coordinates of the Sun (ECI)
  * @param j2000 a j2000 date, default is the current date
- * @returns an array containing the x,y,z coordinates of the sun
+ * @returns a THREE.Vector3 of the position of the sun
  */
 function calculateSunPositionECI(j2000 = convertDate('j2000')){
     var [ra, dec] = calculateSunPositionCE(j2000);
+    const rot = new THREE.Euler(0,ra,dec,'XYZ');
 
-    var x = Math.cos(dec)*Math.cos(ra);
-    var y = Math.cos(dec)*Math.sin(ra);
-    var z = Math.sin(dec);
+    var xyz = new THREE.Vector3(1,0,0);
+    xyz.applyEuler(rot);
 
-    return [x,y,z]
+    return xyz
 }
 
 /**
@@ -72,7 +73,7 @@ function calculateSunPositionECI(j2000 = convertDate('j2000')){
  * @returns the rotation of the earth about its axis in radians
  */
 function calculateEarthRotation(gmst = convertDate('gmst')){
-    return gmst-Math.PI/2;
+    return -gmst
 }
 
 export {

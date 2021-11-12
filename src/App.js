@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-import { createScene, createEnvironment } from './graphics';
+import { createScene, createEnvironment, createDebugOverlay } from './graphics';
 import { DataSet } from './data';
 
 import test_dataset from './assets/datasets/test.txt';
@@ -16,6 +16,7 @@ class App extends React.Component {
         const [scene, camera, renderer] = createScene(new THREE.Vector3(0,0,3));
         this.mount.appendChild(renderer.domElement);
         createEnvironment(scene, camera, renderer);
+        createDebugOverlay(scene, camera, renderer);
         
         /* eslint-disable no-unused-vars */
         var test;

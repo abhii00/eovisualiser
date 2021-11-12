@@ -16,7 +16,7 @@ gmst - angle between greenwich prime meridian and vernal equinox
 
 ECI (earth-centred inertial coordinates) - x,y,z - fixed
 equatorial - declination, right ascension - fixed (equivalent to ECI with different units)
-ECF (earth-centred fixed coordinates) - x,y,z - rotating
+ECF (earth-centred fixed coordinates) - x,y,z - rotating with x axis through prime meridian
 geodetic - latitude, longitude - rotating (equivalent to ECF with different units)
 ecliptic - declination, right ascension - fixed
 

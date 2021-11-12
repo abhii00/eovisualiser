@@ -69,14 +69,14 @@ class DataSet {
                 var pos_three_ecf = new THREE.Vector3(pos_ecf.x, pos_ecf.z, pos_ecf.y);
                 pos_three_ecf.multiplyScalar(this.scale_factor);
 
-                //create mesh and name
+                //plot in eci
                 const mesh_point = new THREE.Mesh(this.sphere_geometry,this.sphere_material.clone());
                 mesh_point.position.copy(pos_three_eci);
                 mesh_point.name = split_data[entry];
                 
                 //color mesh
-                if (Math.abs(pos_three_ecf.x) < 0.05) {mesh_point.material.color = new THREE.Color(0xff0000)} //color those that lie on prime meridian
-                else if (Math.abs(pos_three_ecf.y) < 0.05) {mesh_point.material.color = new THREE.Color(0x00ff00)} //color those that lie in celestial plane
+                if (Math.abs(pos_three_ecf.z) < 0.05) {mesh_point.material.color = new THREE.Color(0xff0000)} //red on prime meridian
+                else if (Math.abs(pos_three_eci.z) < 0.05) {mesh_point.material.color = new THREE.Color(0x00ff00)} //green on vernal equinox
                 else {mesh_point.material.color = new THREE.Color(0xffffff)}
 
                 //ORBIT

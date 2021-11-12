@@ -59,29 +59,21 @@ function createEnvironment(scene, camera, renderer){
 
     //sun
     const sun_offset = 80;
-    const [sun_x, sun_y, sun_z] = calculateSunPositionECI();
+    const sun_pos = calculateSunPositionECI();
+    sun_pos.multiplyScalar(sun_offset);
 
     const sun_light = new THREE.PointLight(0xffffff, 1);
-    sun_light.position.set(sun_offset*sun_x,sun_offset*sun_z,sun_offset*sun_y);
+    sun_light.position.copy(sun_pos);
     scene.add(sun_light);
 
     const sun_material = new THREE.MeshBasicMaterial();
     const sun = new THREE.Mesh(sphere_geometry, sun_material);
     sun.scale.set(2,2,2);
-    sun.position.set(sun_offset*sun_x,sun_offset*sun_z,sun_offset*sun_y);
+    sun.position.copy(sun_pos);
     scene.add(sun);
 
-    //line connecting earth and sun
-    var points = [];
-    points.push(new THREE.Vector3(0,0,0));
-    points.push(sun.position);
-    const line_geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line_material = new THREE.LineBasicMaterial();
-    const line = new THREE.Line(line_geometry,line_material);
-    scene.add(line);
-
     //earth
-    const earth_material = new THREE.MeshStandardMaterial({
+    const earth_material = new THREE.MeshBasicMaterial({
         map: loadTexture(earth_texture),
         metalness: 0.4,
         roughness: 0.8
@@ -103,6 +95,48 @@ function createEnvironment(scene, camera, renderer){
     }
 
     animate();
+}
+
+/**
+ * Creates the debug overlay i.e. axes
+ * @param scene the scene into which to render
+ * @param camera the camera used for the scene
+ * @param renderer the renderer for the scene
+ */
+function createDebugOverlay(scene, camera, renderer){
+    const origin = new THREE.Vector3(0,0,0);
+
+    //line connecting earth and sun
+    const sun_offset = 80;
+    const sun = calculateSunPositionECI();
+    sun.multiplyScalar(sun_offset);
+    const earth_sun_line = createLine(origin, sun, 0xffffff);
+    scene.add(earth_sun_line);
+
+    //ECI axes
+    const vernal_equinox = createLine(origin, new THREE.Vector3(2,0,0), 0x00ff00); //green is vernal equinox
+    const perp_equinox = createLine(origin, new THREE.Vector3(0,0,2), 0x005000); //dark green is perpendicular
+    scene.add(vernal_equinox);
+    scene.add(perp_equinox);
+
+    //ECF
+    const prime_meridian = createLine(origin, new THREE.Vector3(2,0,0), 0xff0000); //red is prime meridian
+    const perp_meridian = createLine(origin, new THREE.Vector3(0,0,2), 0x500000); //dark red is perpendicular
+    prime_meridian.rotation.set(0,calculateEarthRotation(),0);
+    perp_meridian.rotation.set(0,calculateEarthRotation(),0);
+    scene.add(prime_meridian);
+    scene.add(perp_meridian);
+}
+
+/**
+ * Creates a line between two points
+ * @param p1 the start point
+ * @param p2 the end point
+ * @param color the line color
+ * @returns a THREE.line object connecting the two points
+ */
+function createLine(p1, p2, color){
+    return new THREE.Line(new THREE.BufferGeometry().setFromPoints([p1, p2]), new THREE.LineBasicMaterial({color: color}))
 }
 
 /**
@@ -132,6 +166,8 @@ function loadTexture(image_object){
 export {
     createScene,
     createEnvironment,
+    createDebugOverlay,
     updateMousePosition,
+    createLine,
     loadTexture
 }
