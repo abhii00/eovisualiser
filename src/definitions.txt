@@ -19,3 +19,12 @@ equatorial - declination, right ascension - fixed (equivalent to ECI with differ
 ECF (earth-centred fixed coordinates) - x,y,z - rotating
 geodetic - latitude, longitude - rotating (equivalent to ECF with different units)
 ecliptic - declination, right ascension - fixed
+
+inclo - inclination
+nodeo - right ascension of ascending node
+argpo - argument of periapsis
+no - mean motion 
+ecco - eccentricity
+a - semi-major axis - a^3 = mu/no^2
+b - semi-minor axis - b^2 = a^2(1-e^2)
+c - distance from foci to centre of ellipse - c^2 = a^2 - b^2

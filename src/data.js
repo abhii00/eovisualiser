@@ -3,7 +3,6 @@ import * as satellite from 'satellite.js';
 
 import { updateMousePosition } from './graphics';
 import { convertDate } from './utils';
-
 /**
  * A Dataset
  * @param type the type of data provided, currently supports: satellite-tle
@@ -24,11 +23,12 @@ class DataSet {
         //reusable geometry and material
         this.sphere_geometry = new THREE.SphereBufferGeometry(0.01, 2, 2);
         this.sphere_material = new THREE.MeshBasicMaterial();
+        this.line_material = new THREE.LineBasicMaterial();
 
         //intersections and interactions
-        this.createDataPointInteractions(this.scene, this.camera, this.renderer);
-        this.raycaster = new THREE.Raycaster();
         this.intersects = [];
+        this.raycaster = new THREE.Raycaster();
+        this.createDataPointInteractions();
 
         //workflow
         this.type = type;
@@ -48,6 +48,9 @@ class DataSet {
     processTLEData(){
         var split_data = this.raw_data.split(/\r?\n/);
         const date = new Date();
+        var M = 5.9722*10**24;
+        var G = 6.674*10**(-11); 
+        var mu = G*M;
 
         for (var i = 0; i < (split_data.length-1)/3; i++){
             var entry = 3*i;
@@ -55,6 +58,7 @@ class DataSet {
             var record = satellite.twoline2satrec(split_data[entry+1], split_data[entry+2])
             var posvel_eci = satellite.propagate(record, date);
             if (posvel_eci.position !== undefined){
+                //POINT
                 //calculate eci position
                 var pos_eci = posvel_eci.position;
                 var pos_three_eci = new THREE.Vector3(pos_eci.x, pos_eci.z, pos_eci.y); //need to swap y and z axis i.e. x-z plane is plane of earth
@@ -66,16 +70,36 @@ class DataSet {
                 pos_three_ecf.multiplyScalar(this.scale_factor);
 
                 //create mesh and name
-                const mesh = new THREE.Mesh(this.sphere_geometry, this.sphere_material.clone());
-                mesh.position.copy(pos_three_eci);
-                mesh.name = split_data[entry];
+                const mesh_point = new THREE.Mesh(this.sphere_geometry,this.sphere_material.clone());
+                mesh_point.position.copy(pos_three_eci);
+                mesh_point.name = split_data[entry];
                 
                 //color mesh
-                if (Math.abs(pos_three_ecf.x) < 0.05) {mesh.material.color = new THREE.Color(0xff0000)} //color those that lie on prime meridian
-                else if (Math.abs(pos_three_ecf.y) < 0.05) {mesh.material.color = new THREE.Color(0x00ff00)} //color those that lie in celestial plane
-                else {mesh.material.color = new THREE.Color(0xffffff)}
+                if (Math.abs(pos_three_ecf.x) < 0.05) {mesh_point.material.color = new THREE.Color(0xff0000)} //color those that lie on prime meridian
+                else if (Math.abs(pos_three_ecf.y) < 0.05) {mesh_point.material.color = new THREE.Color(0x00ff00)} //color those that lie in celestial plane
+                else {mesh_point.material.color = new THREE.Color(0xffffff)}
 
-                var datapoint = new ECIDataPoint(mesh);
+                //ORBIT
+                //calculate orbital parameters
+                var points = [];
+                const resolution = 75;
+                var a = Math.cbrt(mu/(record.no/60)**2) * 10**(-3) * this.scale_factor;
+                var b = a*Math.sqrt(1-record.ecco**2);
+                var c = Math.sqrt(a^2 - b^2);
+
+                //calculate orbit
+                for (var j = 0; j <= resolution; j++){
+                    var ecc_anom = j * 2 * Math.PI/resolution;
+                    var point = new THREE.Vector3(a*Math.cos(ecc_anom), 0.0, b*Math.sin(ecc_anom));
+                    var rotation = new THREE.Euler(record.nodeo,record.argpo,record.inclo);
+                    point.applyEuler(rotation);
+                    points.push(point);
+                }
+                const orbit_geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const mesh_orbit = new THREE.Line(orbit_geometry,this.line_material);
+
+                //ADD
+                var datapoint = new ECIDataPoint(mesh_point, mesh_orbit);
                 this.datapoints[split_data[entry]] =  datapoint;
             }
         }
@@ -91,38 +115,42 @@ class DataSet {
     }
 
     /**
+     * Updates the intersects of the mouse
+     * @param e the event on which to trigger 
+     * @returns an array of the objects intersected
+     */
+    updateIntersects(e){
+        this.raycaster.setFromCamera(updateMousePosition(e), this.camera);
+        return this.raycaster.intersectObjects(this.scene.children);
+    }
+
+    /**
      * Highlights a datapoint object on hover
      * @param e the event on which to trigger
-     * @param scene the scene into which to render
-     * @param camera the camera used for the scene
-     * @param renderer the renderer for the scene
      */
-    highlightDataPoints(e, scene, camera, renderer){
+    hoverDataPoints(e){
         //undo previous hover
-        var datapoint;
         for (var intersect of this.intersects){
-            datapoint = this.datapoints[intersect];
-            datapoint.mesh.material.color.set(0xffffff);
+            var datapoint = this.datapoints[intersect];
+            datapoint.toggleHovered();
         }
-        this.intersects = [];
+        this.intersects.length = 0;
         
         //get mouse position and raycaster intersects
-        const mouse = updateMousePosition(e);
-        this.raycaster.setFromCamera(mouse, camera);
-        const new_intersects = this.raycaster.intersectObjects(scene.children);
+        const new_intersects = this.updateIntersects(e);
 
         //do new hover
-        for (var new_intersect of new_intersects) {
+        for (var new_intersect of new_intersects){
             if (new_intersect.object.name !== ''){
-                datapoint = this.datapoints[new_intersect.object.name];
-                datapoint.mesh.material.color.set(0xff0000);
+                var new_datapoint = this.datapoints[new_intersect.object.name];
+                new_datapoint.toggleHovered();
 
                 this.intersects.push(new_intersect.object.name);
             }
         }
 
         //change to pointer
-        if (this.intersects.length > 0) { 
+        if (this.intersects.length > 0){ 
             document.body.style.cursor = 'pointer';
          } 
         else { 
@@ -131,25 +159,78 @@ class DataSet {
     }
 
     /**
-     * Creates all the user interactions for the dataset into the scene
-     * @param scene the scene into which to render
-     * @param camera the camera used for the scene
-     * @param renderer the renderer for the scene 
+     * Permanently highlights a datapoint object on click
+     * @param e the event on which to trigger
      */
-    createDataPointInteractions(scene, camera, renderer){
-        var highlight = (e) => this.highlightDataPoints(e, scene, camera, renderer);
+    clickDataPoints(e){      
+        //get mouse position and raycaster intersects
+        const new_intersects = this.updateIntersects(e);
 
-        window.addEventListener('mousemove',highlight,false); 
+        //do click
+        for (var new_intersect of new_intersects){
+            if (new_intersect.object.name !== ''){
+                var datapoint = this.datapoints[new_intersect.object.name];
+                datapoint.clicked ? this.scene.remove(datapoint.mesh2) : this.scene.add(datapoint.mesh2)
+                datapoint.toggleClicked();
+            }
+        }
+    }
+
+    /**
+     * Creates all the user interactions for the dataset into the scene
+     */
+    createDataPointInteractions(){
+        const click = (e) => {this.clickDataPoints(e); this.hoverDataPoints(e)};
+        const hover = (e) => this.hoverDataPoints(e);
+
+        window.addEventListener('mousemove',hover,false); 
+        window.addEventListener('mousedown',click,false);
     }
 }
 
 /**
  * An individual ECI datapoint
  * @param mesh the object for the point
+ * @param mesh2 a secondary object that is shown on click
  */
 class ECIDataPoint{
-    constructor(mesh){
+    constructor(mesh, mesh2){
         this.mesh = mesh;
+        this.mesh2 = mesh2;
+
+        this.hovered = false;
+        this.clicked = false;
+    }
+
+    /**
+     * Toggles hovering state
+     */
+    toggleHovered(){
+        this.hovered = !this.hovered;
+
+        if (!this.clicked){
+            if (this.hovered){
+                this.mesh.material.color.set(0xff0000);
+            }
+            else {
+                this.mesh.material.color.set(0xffffff);
+            }
+        }
+    }
+
+    /**
+     * Toggles clicking state
+     */
+    toggleClicked(){
+        this.clicked = !this.clicked;
+
+        if (this.clicked){
+            this.mesh.material.color.set(0x0000ff);
+            this.mesh.scale.set(2,2,2);
+        }
+        else {
+            this.mesh.scale.set(1,1,1);
+        }
     }
 }
 

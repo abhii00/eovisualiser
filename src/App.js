@@ -9,8 +9,7 @@ import test_dataset from './assets/datasets/test.txt';
 class App extends React.Component {
     /* 
     TODO Add API request to portfolioserver
-    TODO Add clickable elements
-    TODO Add orbit visualisation
+    FIXME orbit visualisation
     */
 
     componentDidMount() {

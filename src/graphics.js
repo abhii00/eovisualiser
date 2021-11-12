@@ -33,18 +33,6 @@ function createScene(starting_camera_pos){
 }
 
 /**
- * Updates the position of the mouse on an event
- * @param e the event on which to update the mouse position
- * @returns a THREE Vector2 object containing the x and y position of the mouse
- */
-function updateMousePosition(e){
-    const mouse = new THREE.Vector2();
-    mouse.x = (e.clientX / window.innerWidth)*2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight)*2 + 1;
-    return mouse;
-}
-
-/**
  * Creates the environment i.e. lighting, sun, earth etc.
  * @param scene the scene into which to render
  * @param camera the camera used for the scene
@@ -115,6 +103,18 @@ function createEnvironment(scene, camera, renderer){
     }
 
     animate();
+}
+
+/**
+ * Updates the position of the mouse on an event
+ * @param e the event on which to update the mouse position
+ * @returns a THREE Vector2 object containing the x and y position of the mouse
+ */
+ function updateMousePosition(e){
+    const mouse = new THREE.Vector2();
+    mouse.x = (e.clientX / window.innerWidth)*2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight)*2 + 1;
+    return mouse;
 }
 
 /**
