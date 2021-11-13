@@ -43,6 +43,7 @@ function createEnvironment(scene, camera, renderer){
     6378km (1 R_e) is mapped to 1 unit,
     sun positioned 80 units away rather than approx 20,000,
     everything is in ECI (sun, space objects) and earth is rotated to match this
+    x,y,z in actual coords is mapped to x,z,-y i.e. y up instead of z up so x-z plane is equatorial plane
     */
 
     //reusable geometry
@@ -73,7 +74,7 @@ function createEnvironment(scene, camera, renderer){
     scene.add(sun);
 
     //earth
-    const earth_material = new THREE.MeshBasicMaterial({
+    const earth_material = new THREE.MeshStandardMaterial({
         map: loadTexture(earth_texture),
         metalness: 0.4,
         roughness: 0.8
@@ -115,13 +116,13 @@ function createDebugOverlay(scene, camera, renderer){
 
     //ECI axes
     const vernal_equinox = createLine(origin, new THREE.Vector3(2,0,0), 0x00ff00); //green is vernal equinox
-    const perp_equinox = createLine(origin, new THREE.Vector3(0,0,2), 0x005000); //dark green is perpendicular
+    const perp_equinox = createLine(origin, new THREE.Vector3(0,0,-2), 0x005000); //dark green is perpendicular
     scene.add(vernal_equinox);
     scene.add(perp_equinox);
 
     //ECF
     const prime_meridian = createLine(origin, new THREE.Vector3(2,0,0), 0xff0000); //red is prime meridian
-    const perp_meridian = createLine(origin, new THREE.Vector3(0,0,2), 0x500000); //dark red is perpendicular
+    const perp_meridian = createLine(origin, new THREE.Vector3(0,0,-2), 0x500000); //dark red is perpendicular
     prime_meridian.rotation.set(0,calculateEarthRotation(),0);
     perp_meridian.rotation.set(0,calculateEarthRotation(),0);
     scene.add(prime_meridian);

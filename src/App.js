@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-import { createScene, createEnvironment, createDebugOverlay } from './graphics';
+import { createScene, createEnvironment } from './graphics';
 import { DataSet } from './data';
 
 import test_dataset from './assets/datasets/test.txt';
@@ -9,14 +9,12 @@ import test_dataset from './assets/datasets/test.txt';
 class App extends React.Component {
     /* 
     TODO Add API request to portfolioserver
-    FIXME orbit visualisation
     */
 
     componentDidMount() {
         const [scene, camera, renderer] = createScene(new THREE.Vector3(0,0,3));
         this.mount.appendChild(renderer.domElement);
         createEnvironment(scene, camera, renderer);
-        createDebugOverlay(scene, camera, renderer);
         
         /* eslint-disable no-unused-vars */
         var test;

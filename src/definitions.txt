@@ -28,3 +28,5 @@ ecco - eccentricity
 a - semi-major axis - a^3 = mu/no^2
 b - semi-minor axis - b^2 = a^2(1-e^2)
 c - distance from foci to centre of ellipse - c^2 = a^2 - b^2
+periapsis - closest approach
+apoapsis - furthest approach
