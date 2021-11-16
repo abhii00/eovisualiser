@@ -11,14 +11,13 @@ _July 2021 - Present_
 ### **Implemented Features**
 
 * 3D model of Earth.
+* Accurate Earth rotation and day-night modelling of Earth.
 * Framework for processing datasets.
 * Visualisation of satellite positions from Two Line Element (TLE) data.
+* Realtime TLE data import from API request to Celestrak.
 
 ### **Planned Features**
 
-* Effective data import from API request to MEN server.
-* Accurate Earth rotation.
-* Accurate day-night modelling of Earth.
 * Accurate modelling of Solar System.
 * Custom propagation algorithm for TLE data. 
 * Import and visualisation of EO data given in coordinates and values.

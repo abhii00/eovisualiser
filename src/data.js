@@ -9,9 +9,13 @@ import { Vector3 } from 'three';
  * @param type the type of data provided, currently supports: satellite-tle
  * @param raw the raw dataset
  * @param scale_factor the scaling factor for display
+ * @param scene the scene into which to render
+ * @param camera the camera used for the scene
+ * @param renderer the renderer for the scene
+ * @param updater the updater for the information
  */
 class DataSet {
-    constructor(type, raw, scale_factor, scene, camera, renderer){
+    constructor(type, raw, scale_factor, scene, camera, renderer, updater){
         this.raw_data = raw;
         this.scale_factor = scale_factor;
         this.datapoints = {};
@@ -20,6 +24,9 @@ class DataSet {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
+
+        //updater
+        this.updater = updater;
 
         //reusable geometry and material
         this.sphere_geometry = new THREE.SphereBufferGeometry(0.01, 3, 3);
@@ -159,6 +166,11 @@ class DataSet {
             }
         }
 
+        //pass to updater
+        if (this.intersects.length > 0){
+            this.updater(this.intersects[0], 'hover');
+        }
+
         //change to pointer
         if (this.intersects.length > 0){ 
             document.body.style.cursor = 'pointer';
@@ -180,7 +192,8 @@ class DataSet {
         for (var new_intersect of new_intersects){
             if (new_intersect.object.name !== ''){
                 var datapoint = this.datapoints[new_intersect.object.name];
-                datapoint.clicked ? this.scene.remove(datapoint.mesh2) : this.scene.add(datapoint.mesh2)
+                datapoint.clicked ? this.scene.remove(datapoint.mesh2) : this.scene.add(datapoint.mesh2);
+                datapoint.clicked ? this.updater(new_intersect.object.name, 'click-remove') : this.updater(new_intersect.object.name, 'click-add');
                 datapoint.toggleClicked();
             }
         }   

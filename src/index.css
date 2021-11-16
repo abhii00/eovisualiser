@@ -1,4 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+
 body {
     margin: 0px;
     padding: 0px;
+
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    color: white;
+}
+
+/*App*/
+.app {
+    position: relative;
+}
+
+.infos-container {
+    background-color: white;
+    box-shadow: inset rgba(0, 0, 0, 0.5) 0px 5px 15px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    right: 0;
+    z-index: 1;
+
+    width: 22vw;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+}
+
+/*Info*/
+.info-container {
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 5px 15px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+
+    width: 20vw;
+}
+
+.info-text{
+    font-size: 2vh;
 }
