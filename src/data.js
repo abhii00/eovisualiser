@@ -114,7 +114,7 @@ class DataSet {
                 mesh_orbit.translateOnAxis(new Vector3(1,0,0),-c);
 
                 //ADD
-                var datapoint = new ECIDataPoint(mesh_point, mesh_orbit);
+                var datapoint = new ECIDataPoint(record, mesh_point, mesh_orbit);
                 this.datapoints[split_data[entry]] =  datapoint;
             }
         }
@@ -213,11 +213,13 @@ class DataSet {
 
 /**
  * An individual ECI datapoint
+ * @param data the data that makes up the ECI datapoint
  * @param mesh the object for the point
  * @param mesh2 a secondary object that is shown on click
  */
 class ECIDataPoint{
-    constructor(mesh, mesh2){
+    constructor(data, mesh, mesh2){
+        this.data = data;
         this.mesh = mesh;
         this.mesh2 = mesh2;
 

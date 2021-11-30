@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-import { Info } from './components'
+import { Info, Loading } from './components'
 
 import { createScene, createEnvironment } from '../graphics';
 import { DataSet } from '../data';
@@ -15,7 +15,8 @@ class App extends React.Component {
 
         this.state = {
             datapointHovered: ['Hover!'],
-            datapointsClicked: ['Click!']
+            datapointsClicked: ['Click!'],
+            loading: true
         }
     }
 
@@ -35,6 +36,7 @@ class App extends React.Component {
         fetch(dataset_source)
         .then(r => r.text())
         .then(text => dataset = new DataSet("satellite-tle", text, 1/6378, scene, camera, renderer, this.updateDisplay))
+        .then(this.setState({loading: false}))
     }
 
     updateDisplay = (a, type) => {
@@ -78,13 +80,17 @@ class App extends React.Component {
     }
 
     render() {
+        console.log(this.state.loading)
         return (
-            <div className='app' ref={ref => (this.mount = ref)} >
-                <div className='infos-container'>
-                    <Info info={this.state.datapointHovered} style={{backgroundColor: 'rgb(100,0,0)'}}/>
-                    <Info info={this.state.datapointsClicked} style={{backgroundColor: 'rgb(0,100,100)', top: '20vh'}}/>
+            <React.Fragment>
+                <Loading loading={this.state.loading}/>
+                <div className='app' ref={ref => (this.mount = ref)} >
+                    <div className='infos-container'>
+                        <Info info={this.state.datapointHovered} style={{backgroundColor: 'rgb(100,0,0)'}}/>
+                        <Info info={this.state.datapointsClicked} style={{backgroundColor: 'rgb(0,100,100)', top: '20vh'}}/>
+                    </div>
                 </div>
-            </div>
+            </React.Fragment>
         )
     }
 }
