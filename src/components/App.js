@@ -9,6 +9,11 @@ import { DataSet } from '../data';
 import test_dataset from '../assets/datasets/test.txt';
 import config from '../config.json';
 
+//TODO Optimise dataset loading
+//TODO Implement EO dataset functionality
+//TODO Implement realistic Earth
+//TODO Fix loading screen
+
 class App extends React.Component {
     constructor(props){
         super(props)
