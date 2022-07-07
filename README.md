@@ -1,5 +1,7 @@
 # **EO Visualiser**
 
+:white_check_mark: WORK PLANNED :white_check_mark:
+
 An accessible visualiser for Earth Observation (EO) data and space object tracking.
 
 _July 2021 - Present_
